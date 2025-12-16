@@ -131,4 +131,8 @@ if __name__ == '__main__':
     # 启动服务器
     # host='0.0.0.0' 允许其他设备访问
     # port=5000 默认端口
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+    if __name__ == '__main__':
+    # 开发环境运行（本地测试用）
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
