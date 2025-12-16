@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留学生信息查询系统 / International Student Information Query System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .lang-switch {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .lang-switch button {
+            background: none;
+            border: 2px solid #4b6cb7;
+            color: #4b6cb7;
+            padding: 8px 20px;
+            margin: 0 5px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .lang-switch button:hover {
+            background-color: #4b6cb7;
+            color: white;
+        }
+
+        .lang-switch button.active {
+            background-color: #4b6cb7;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .query-section {
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #4b6cb7;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.2);
+        }
+
+        .submit-btn {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(75, 108, 183, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            display: none;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #4b6cb7;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .result-icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .success .result-icon {
+            color: #28a745;
+        }
+
+        .error .result-icon {
+            color: #dc3545;
+        }
+
+        .result-header h3 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .result-content {
+            font-size: 17px;
+            color: #555;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .info-table th {
+            background-color: #e9ecef;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .info-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            color: #212529;
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .field-name {
+            font-weight: 600;
+            width: 150px;
+            color: #495057;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .form-group input {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .submit-btn {
+                padding: 15px;
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header .subtitle {
+                font-size: 14px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .info-table {
+                font-size: 14px;
+            }
+
+            .info-table th, .info-table td {
+                padding: 10px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4b6cb7;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="main-title">留学生信息查询系统</h1>
+            <div class="subtitle" id="subtitle">请输入手机号查询您的报名信息</div>
+        </div>
+
+        <div class="lang-switch">
+            <button id="lang-zh" class="active" onclick="switchLanguage('zh')">中文</button>
+            <button id="lang-en" onclick="switchLanguage('en')">English</button>
+        </div>
+
+        <div class="content">
+            <div class="query-section">
+                <div class="form-group">
+                    <label id="phone-label">手机号 / Phone Number</label>
+                    <input type="text" id="phone-input" placeholder="请输入11位手机号码" maxlength="11">
+                    <div id="phone-error" style="color: #dc3545; margin-top: 5px; display: none;"></div>
+                </div>
+
+                <button class="submit-btn" id="submit-btn" onclick="queryStudent()">
+                    <i class="fas fa-search"></i> <span id="submit-text">查询信息</span>
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div id="loading-text">正在查询中...</div>
+                </div>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <!-- 结果会动态显示在这里 -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <div id="footer-text">系统仅供留学生查询使用，信息已做隐私保护处理</div>
+            <div style="margin-top: 5px; font-size: 12px;" id="footer-info">当前系统共包含20条记录</div>
+        </div>
+    </div>
+
+    <script>
+        // 语言设置
+        let currentLang = 'zh';
+
+        // 双语文本
+        const translations = {
+            zh: {
+                mainTitle: "留学生信息查询系统",
+                subtitle: "请输入手机号查询您的报名信息",
+                phoneLabel: "手机号",
+                phonePlaceholder: "请输入11位手机号码",
+                submitText: "查询信息",
+                loadingText: "正在查询中...",
+                footerText: "系统仅供留学生查询使用，信息已做隐私保护处理",
+                footerInfo: "当前系统共包含20条记录",
+                successTitle: "查询成功",
+                errorTitle: "查询失败",
+                fieldName: "姓名",
+                fieldUestcId: "学号",
+                fieldPhone: "手机号",
+                fieldEmail: "邮箱",
+                fieldWechat: "微信ID",
+                backToQuery: "返回查询",
+                closeResult: "关闭"
+            },
+            en: {
+                mainTitle: "International Student Information Query System",
+                subtitle: "Please enter your phone number to check your registration information",
+                phoneLabel: "Phone Number",
+                phonePlaceholder: "Please enter 11-digit phone number",
+                submitText: "Query Information",
+                loadingText: "Querying...",
+                footerText: "System for international student queries only, information has been privacy-protected",
+                footerInfo: "The system currently contains 20 records",
+                successTitle: "Query Successful",
+                errorTitle: "Query Failed",
+                fieldName: "Name",
+                fieldUestcId: "UESTC ID",
+                fieldPhone: "Phone Number",
+                fieldEmail: "Email",
+                fieldWechat: "WeChat ID",
+                backToQuery: "Back to Query",
+                closeResult: "Close"
+            }
+        };
+
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLang = lang;
+
+            // 更新按钮状态
+            document.getElementById('lang-zh').classList.remove('active');
+            document.getElementById('lang-en').classList.remove('active');
+            document.getElementById('lang-' + lang).classList.add('active');
+
+            // 更新界面文本
+            document.getElementById('main-title').textContent = translations[lang].mainTitle;
+            document.getElementById('subtitle').textContent = translations[lang].subtitle;
+            document.getElementById('phone-label').textContent = lang === 'zh' ?
+                `${translations[lang].phoneLabel} / Phone Number` :
+                `Phone Number / ${translations[lang].phoneLabel}`;
+            document.getElementById('phone-input').placeholder = translations[lang].phonePlaceholder;
+            document.getElementById('submit-text').textContent = translations[lang].submitText;
+            document.getElementById('loading-text').textContent = translations[lang].loadingText;
+            document.getElementById('footer-text').textContent = translations[lang].footerText;
+            document.getElementById('footer-info').textContent = translations[lang].footerInfo;
+
+            // 更新结果区域的文本（如果已显示）
+            updateResultText();
+        }
+
+        // 更新结果区域文本
+        function updateResultText() {
+            const resultSection = document.getElementById('result-section');
+            if (resultSection.style.display !== 'block') return;
+
+            const isSuccess = resultSection.classList.contains('success');
+            const messageElement = document.querySelector('#result-section .result-content');
+            if (!messageElement) return;
+
+            if (isSuccess) {
+                const studentData = JSON.parse(resultSection.dataset.student || '{}');
+                updateStudentResultDisplay(studentData);
+            }
+        }
+
+        // 查询学生信息
+        async function queryStudent() {
+            const phoneInput = document.getElementById('phone-input');
+            const phone = phoneInput.value.trim();
+            const phoneError = document.getElementById('phone-error');
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // 验证手机号
+            if (!phone) {
+                phoneError.textContent = currentLang === 'zh' ?
+                    '请输入手机号' : 'Please enter phone number';
+                phoneError.style.display = 'block';
+                phoneInput.focus();
+                return;
+            }
+
+            if (!/^\d+$/.test(phone)) {
+                phoneError.textContent = currentLang === 'zh' ?
+                    '手机号只能包含数字' : 'Phone number must contain only digits';
+                phoneError.style.display = 'block';
+                phoneInput.focus();
+                return;
+            }
+
+            if (phone.length !== 11) {
+                phoneError.textContent = currentLang === 'zh' ?
+                    '手机号应为11位数字' : 'Phone number should be 11 digits';
+                phoneError.style.display = 'block';
+                phoneInput.focus();
+                return;
+            }
+
+            phoneError.style.display = 'none';
+
+            // 显示加载中
+            submitBtn.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                // 发送查询请求
+                const formData = new FormData();
+                formData.append('phone', phone);
+
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // 显示结果
+                displayResult(result);
+            } catch (error) {
+                console.error('查询错误:', error);
+                displayResult({
+                    success: false,
+                    message: currentLang === 'zh' ?
+                        '网络错误，请检查连接' : 'Network error, please check connection'
+                });
+            } finally {
+                // 隐藏加载中
+                submitBtn.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+
+        // 显示查询结果
+        function displayResult(result) {
+            const resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            resultSection.className = 'result-section';
+
+            let resultHtml = '';
+
+            if (result.success) {
+                // 成功找到信息
+                resultSection.classList.add('success');
+                resultSection.dataset.student = JSON.stringify(result.student);
+
+                const student = result.student;
+
+                // 构建显示表格
+                resultHtml = `
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>${translations[currentLang].successTitle}</h3>
+                    </div>
+                    <div class="result-content">
+                        <table class="info-table">
+                            <tr>
+                                <td class="field-name">${translations[currentLang].fieldName}</td>
+                                <td>${student.name}</td>
+                            </tr>
+                            <tr>
+                                <td class="field-name">${translations[currentLang].fieldUestcId}</td>
+                                <td>${student.uestc_id}</td>
+                            </tr>
+                            <tr>
+                                <td class="field-name">${translations[currentLang].fieldPhone}</td>
+                                <td>${student.phone_masked || student.phone_number}</td>
+                            </tr>
+                            <tr>
+                                <td class="field-name">${translations[currentLang].fieldEmail}</td>
+                                <td>${student.email_masked || student.email}</td>
+                            </tr>
+                            <tr>
+                                <td class="field-name">${translations[currentLang].fieldWechat}</td>
+                                <td>${student.wechat_masked || student.wechat_id || 'N/A'}</td>
+                            </tr>
+                        </table>
+                        <div style="margin-top: 25px; text-align: center;">
+                            <button class="submit-btn" onclick="closeResult()" style="width: 200px; font-size: 16px;">
+                                ${translations[currentLang].closeResult}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 未找到信息
+                resultSection.classList.add('error');
+
+                const message = result.message || (currentLang === 'zh' ? '抱歉，未找到您的信息' : 'Sorry, your information was not found');
+
+                resultHtml = `
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>${translations[currentLang].errorTitle}</h3>
+                    </div>
+                    <div class="result-content">
+                        <p style="font-size: 18px; margin-bottom: 20px;">${message}</p>
+                        <div style="text-align: center;">
+                            <button class="submit-btn" onclick="closeResult()" style="width: 200px; font-size: 16px;">
+                                ${translations[currentLang].backToQuery}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultSection.innerHTML = resultHtml;
+
+            // 滚动到结果区域
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 更新学生结果显示（用于语言切换时）
+        function updateStudentResultDisplay(student) {
+            const resultSection = document.getElementById('result-section');
+            if (!resultSection.classList.contains('success')) return;
+
+            // 更新表格标题
+            const tableRows = resultSection.querySelectorAll('.field-name');
+            if (tableRows.length >= 5) {
+                tableRows[0].textContent = translations[currentLang].fieldName;
+                tableRows[1].textContent = translations[currentLang].fieldUestcId;
+                tableRows[2].textContent = translations[currentLang].fieldPhone;
+                tableRows[3].textContent = translations[currentLang].fieldEmail;
+                tableRows[4].textContent = translations[currentLang].fieldWechat;
+            }
+
+            // 更新按钮文本
+            const button = resultSection.querySelector('.submit-btn');
+            if (button) {
+                button.textContent = translations[currentLang].closeResult;
+            }
+        }
+
+        // 关闭结果
+        function closeResult() {
+            document.getElementById('result-section').style.display = 'none';
+            document.getElementById('phone-input').value = '';
+            document.getElementById('phone-input').focus();
+        }
+
+        // 回车键查询
+        document.getElementById('phone-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                queryStudent();
+            }
+        });
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查URL中的语言参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            if (langParam && (langParam === 'zh' || langParam === 'en')) {
+                switchLanguage(langParam);
+            }
+
+            // 焦点到输入框
+            document.getElementById('phone-input').focus();
+        });
+    </script>
+</body>
+</html>
